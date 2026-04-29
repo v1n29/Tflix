@@ -1,0 +1,32 @@
+name: Auto-Update M3U8 Link
+
+on:
+  schedule:
+    - cron: '0 */4 * * *' # Wakes up and runs every 4 hours
+  workflow_dispatch: # Allows you to click a button to run it manually
+
+jobs:
+  update-stream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run the Python Scraper
+        run: python scraper.py
+
+      - name: Commit and save the new link
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add stream.m3u8
+          git commit -m "Auto-updated fresh stream link" || exit 0
+          git push
