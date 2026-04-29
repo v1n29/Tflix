@@ -2,8 +2,8 @@ name: Auto-Update M3U8 Link
 
 on:
   schedule:
-    - cron: '0 */4 * * *' # Wakes up and runs every 4 hours
-  workflow_dispatch: # Allows you to click a button to run it manually
+    - cron: '0 */4 * * *' 
+  workflow_dispatch: 
 
 jobs:
   update-stream:
@@ -15,12 +15,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.10'
 
-      - name: Install dependencies
-        run: pip install requests
+      - name: Install dependencies and Playwright
+        run: |
+          python -m pip install --upgrade pip
+          pip install playwright
+          playwright install chromium
+          playwright install-deps
 
-      - name: Run the Python Scraper
+      - name: Run the Playwright Scraper
         run: python scraper.py
 
       - name: Commit and save the new link
@@ -28,5 +32,6 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add stream.m3u8
-          git commit -m "Auto-updated fresh stream link" || exit 0
+          git commit -m "Auto-updated fresh stream link via Playwright" || exit 0
           git push
+          
