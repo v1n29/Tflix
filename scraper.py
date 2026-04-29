@@ -39,11 +39,17 @@ def main():
     if found_link:
         print(f"\nSUCCESS! Caught hidden link: {found_link}")
         
+        # --- REFERER TRICK MODIFICATION START ---
+        # We add #EXTVLCOPT tags. These tell players like VLC to "fake" the origin of the request.
         m3u8_content = f"""#EXTM3U
 #EXT-X-VERSION:3
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1000000
+#EXTVLCOPT:http-referrer=https://tflix.life/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
 {found_link}
 """
+        # --- REFERER TRICK MODIFICATION END ---
+
         with open('stream.m3u8', 'w') as file:
             file.write(m3u8_content)
         print("Successfully updated stream.m3u8")
